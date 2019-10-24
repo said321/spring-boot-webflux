@@ -21,6 +21,11 @@ import com.neo.Entities.Student;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/* 
+ * if you wanna use curl tool
+ * curl -d "{\"id\":3, \"name\":\"hassan\"}" -H "Content-Type: application/json" -X POST "localhost:8080/student/add"
+ */
+
 @RestController
 public class HelloController {
 	
