@@ -43,6 +43,15 @@ public class StudentRepository {
 			return Mono.just(false);
 	}
 	
+	public Mono<Student> update(Student std){
+		if(findById(std.getId()) != null) {
+			findById(std.getId()).block().setName(std.getName());
+			return Mono.just(std);			
+		}
+		else
+			return null;
+	}
+	
 	public List<Student> getStudents(){
 		return students;
 	}

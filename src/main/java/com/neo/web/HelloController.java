@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,9 +32,27 @@ public class HelloController {
         return Mono.just("Welcome to reactive world ~");
     }
     
+    // Flux<Student> as json array
     @GetMapping("/students")
     public Flux<Student> findAllStudents(){
 		return studentRepository.findAll();
+    }
+    
+    // Flux<Student> as Server Sent Event (SSE)
+    @GetMapping(value="/students/sse", produces=MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Student> findAllStudentsSSE(){
+		return studentRepository.findAll();
+    }
+    
+    // Flux<Student> as json Stream
+    @GetMapping(value="/students/stream", produces=MediaType.APPLICATION_STREAM_JSON_VALUE)
+    public Flux<Student> findAllStudentsStream(){
+    	Flux<Long> interval = Flux.interval(Duration.ofMillis(1000));
+    	Flux<Student> stds = studentRepository.findAll();
+		return Flux.zip(interval, stds)
+				.map(data->{
+					return data.getT2();
+				});
     }
     
     @GetMapping("/student/{id}")
@@ -51,12 +70,19 @@ public class HelloController {
 		return studentRepository.delete(id);
     }
     
+    @PutMapping("student/update")
+    public Mono<Student> update(@RequestBody Student student){
+    	return studentRepository.update(student);
+    }
+    
     @GetMapping(value="/students/stream/{id}", produces=MediaType.APPLICATION_STREAM_JSON_VALUE)
     public Flux<Event> studentStream(@PathVariable int id){
     	Flux<Long> interval = Flux.interval(Duration.ofMillis(1000));
     	Flux<Event> events = Flux.fromStream(Stream.generate(()->{
-    		Event event = new Event(Instant.now(), studentRepository.findById(id).block(),
-    				1100+Math.random()*1000);
+    		Event event = new Event(Instant.now(), 
+    				studentRepository.findById(id).block(),
+    				1100+Math.random()*1000
+    				);
     		return event;
     	}));
     	
