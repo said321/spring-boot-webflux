@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: Said
+Build-Jdk: 11.0.4
+Implementation-Title: spring-boot-webflux
+Implementation-Version: 1.0.0-SNAPSHOT
+Implementation-Vendor-Id: com.neo
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/spring-boot-webflux
+Created-By: Maven Integration for Eclipse
+
